@@ -2,6 +2,7 @@ package me.kdv.noadsradio.data.database.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import kotlinx.coroutines.flow.Flow
 import me.kdv.noadsradio.data.database.model.StationDb
 import me.kdv.noadsradio.domain.model.StationPlaybackState
 
@@ -11,7 +12,7 @@ interface StationDao {
     suspend fun insertStations(stations: List<StationDb>)
 
     @Query("SELECT * FROM station")
-    fun getStations(): LiveData<List<StationDb>>
+    fun getStations(): Flow<List<StationDb>>
 
     @Query("DELETE FROM station")
     suspend fun deleteStations()

@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.google.firebase.crashlytics)
     id("kotlin-kapt")
     alias(libs.plugins.hiltAndroid)
+    alias(libs.plugins.parcelize)
 }
 
 android {

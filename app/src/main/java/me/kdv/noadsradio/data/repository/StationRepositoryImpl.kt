@@ -2,6 +2,8 @@ package me.kdv.noadsradio.data.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import me.kdv.noadsradio.data.database.dao.StationDao
 import me.kdv.noadsradio.data.database.mapper.StationMapper
 import me.kdv.noadsradio.data.network.model.StationDto
@@ -30,7 +32,7 @@ class StationRepositoryImpl @Inject constructor(
         stationDao.updateStation(db)
     }
 
-    override fun getStations(): LiveData<List<Station>> {
+    override fun getStations(): Flow<List<Station>> {
         return stationDao.getStations().map {
             it.map {
                 stationMapper.mapDbToEntity(it)

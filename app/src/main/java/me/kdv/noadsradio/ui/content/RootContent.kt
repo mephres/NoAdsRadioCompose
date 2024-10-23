@@ -9,17 +9,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
-import com.intas.monitortsom.presentation.root.DefaultRootComponent
-import com.intas.monitortsom.presentation.root.RootComponent
-import com.intas.monitortsom.ui.content.main.PdfViewScreen
-import com.intas.monitortsom.ui.theme.MonitorTsomTheme
+import me.kdv.noadsradio.presentation.root.DefaultRootComponent
+import me.kdv.noadsradio.presentation.root.RootComponent
+import me.kdv.noadsradio.ui.theme.NoAdsRadioTheme
 
 @Composable
 fun RootContent(
-    component: DefaultRootComponent,
-    onLocaleChanged: (String) -> Unit
+    component: DefaultRootComponent
 ) {
-    MonitorTsomTheme {
+    NoAdsRadioTheme {
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
@@ -29,20 +27,8 @@ fun RootContent(
                 }
                 AnimatedContent(targetState = currentInstance, label = "RootAnimatedContent") { instance->
                     when(instance) {
-                        is RootComponent.Child.Auth -> {
-                            LoginScreen(component = instance.component)
-                        }
-                        is RootComponent.Child.Options -> {
-                            OptionsScreen(component = instance.component) {
-                                onLocaleChanged(it)
-                            }
-                        }
                         is RootComponent.Child.Main -> {
                             MainScreen(component = instance.component)
-                        }
-
-                        is RootComponent.Child.PdfView -> {
-                            PdfViewScreen(component = instance.component)
                         }
                     }
                 }

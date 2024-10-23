@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import me.kdv.noadsradio.data.database.dao.StationGroupDao
 import me.kdv.noadsradio.data.database.mapper.StationGroupMapper
 import me.kdv.noadsradio.data.network.FBDataBase
@@ -46,7 +48,7 @@ class StationGroupRepositoryImpl @Inject constructor(
         })
     }
 
-    override fun getStationGroups(): LiveData<List<StationGroup>> {
+    override fun getStationGroups(): Flow<List<StationGroup>> {
         return stationGroupDao.getGroups().map {
             it.map {
                 stationGroupMapper.mapDbToEntity(it)

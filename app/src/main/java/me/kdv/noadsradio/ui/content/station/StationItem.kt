@@ -1,4 +1,4 @@
-package me.kdv.noadsradio.presentation.stations
+package me.kdv.noadsradio.ui.content.station
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke

@@ -27,7 +27,7 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-    val stationGroupState = stationGroupRepository.getStationGroups().asFlow()
+    val stationGroupState = stationGroupRepository.getStationGroups()
         .filter {
             it.isNotEmpty()
         }.map {
@@ -36,7 +36,7 @@ class MainViewModel @Inject constructor(
             StationGroupState.Loading
         }
 
-    val stations = stationRepository.getStations().asFlow()
+    val stations = stationRepository.getStations()
         .filter {
             it.isNotEmpty()
         }.map {
