@@ -49,4 +49,8 @@ class StationRepositoryImpl @Inject constructor(
             stationMapper.mapDbToEntity(it)
         }
     }
+
+    override suspend fun setStationState(id: Int, state: Int) {
+        stationDao.setStationStateBy(id = id, state = state)
+    }
 }

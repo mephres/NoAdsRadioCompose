@@ -9,7 +9,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import me.kdv.noadsradio.domain.model.StationGroup
 import me.kdv.noadsradio.presentation.main.MainStore
-import me.kdv.noadsradio.presentation.station_groups.StationGroups
 
 @Composable
 fun StationGroupContent(

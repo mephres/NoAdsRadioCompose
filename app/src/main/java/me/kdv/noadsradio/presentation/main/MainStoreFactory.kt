@@ -1,16 +1,24 @@
 package me.kdv.noadsradio.presentation.main
 
+import android.content.Context
+import androidx.compose.ui.platform.LocalContext
 import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineBootstrapper
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import me.kdv.noadsradio.domain.model.Station
 import me.kdv.noadsradio.domain.model.StationGroup
+import me.kdv.noadsradio.domain.model.StationPlaybackState
 import me.kdv.noadsradio.domain.usecases.GetStationGroupsUseCase
 import me.kdv.noadsradio.domain.usecases.GetStationsUseCase
 import me.kdv.noadsradio.domain.usecases.LoadStationsUseCase
+import me.kdv.noadsradio.domain.usecases.SetIsCurrentStationGroupUseCase
+import me.kdv.noadsradio.domain.usecases.SetStationStateUseCase
+import me.kdv.noadsradio.presentation.MusicPlayer
+import me.kdv.noadsradio.presentation.main.MainStore.Intent
 import javax.inject.Inject
 
 class MainStoreFactory @Inject constructor(
@@ -18,7 +26,9 @@ class MainStoreFactory @Inject constructor(
     private val loadStationsUseCase: LoadStationsUseCase,
     private val getStationGroupsUseCase: GetStationGroupsUseCase,
     private val getStationsUseCase: GetStationsUseCase,
-
+    private val setIsCurrentStationGroupUseCase: SetIsCurrentStationGroupUseCase,
+    private val setStationStateUseCase: SetStationStateUseCase,
+    private val musicPlayer: MusicPlayer
     ) {
 
     fun create(): MainStore =
@@ -26,14 +36,15 @@ class MainStoreFactory @Inject constructor(
             Store<MainStore.Intent, MainStore.State, MainStore.Label> by storeFactory.create(
                 name = "MainStore",
                 initialState = MainStore.State(
-                    field = "",
+                    currentStation = null,
                     stationGroupState = MainStore.State.StationGroupState.Initial,
                     stationState = MainStore.State.StationState.Initial
                 ),
                 bootstrapper = BootstrapperImpl(),
                 executorFactory = ::ExecutorImpl,
                 reducer = ReducerImpl
-            ) {}
+            ) {
+            }
 
     private sealed interface Action {
         data object StationGroupsStartLoading : Action
@@ -53,22 +64,31 @@ class MainStoreFactory @Inject constructor(
         data object StationsStartLoading : Msg
         data object StationsLoadingError : Msg
         data class StationsLoaded(val stations: List<Station>) : Msg
+
+        data class ChangeMovedStationGroupId(val id: Int) : Msg
     }
 
     private inner class BootstrapperImpl() : CoroutineBootstrapper<Action>() {
         override fun invoke() {
+            musicPlayer.initMusicPlayer {
+                val a = 1
+            }
             scope.launch {
+                dispatch(Action.StationGroupsStartLoading)
+                dispatch(Action.StationsStartLoading)
                 loadStationsUseCase()
+            }
+            scope.launch {
                 try {
-                    dispatch(Action.StationGroupsStartLoading)
                     getStationGroupsUseCase().collect {
                         dispatch(Action.StationGroupsLoaded(stationGroups = it))
                     }
                 } catch (e: Exception) {
                     dispatch(Action.StationGroupsLoadingError)
                 }
+            }
+            scope.launch {
                 try {
-                    dispatch(Action.StationsStartLoading)
                     getStationsUseCase().collect {
                         dispatch(Action.StationsLoaded(stations = it))
                     }
@@ -101,7 +121,33 @@ class MainStoreFactory @Inject constructor(
                 is MainStore.Intent.ChangeNavigationRoute -> {
                     dispatch(Msg.ChangeNavigationRoute(route = intent.route))
                 }*/
-                else -> {}
+                is Intent.SetIsCurrentStationGroup -> {
+                    scope.launch {
+                        setIsCurrentStationGroupUseCase(id = intent.id)
+                    }
+                }
+
+                is Intent.ChangeMovedStationGroupId -> {
+                    dispatch(Msg.ChangeMovedStationGroupId(id = intent.id))
+                }
+
+                is Intent.ChangeStationState -> {
+                    scope.launch {
+                        setStationStateUseCase(id = intent.station.id, state = intent.state.ordinal)
+                    }
+                }
+
+                Intent.StopPlaying -> {
+                    musicPlayer.stopPlaying()
+                }
+
+                is Intent.PlayStation -> {
+                    musicPlayer.playStation(station = intent.station, onMediaMetadataChanged = {
+                        intent.onMediaMetadataChanged(it)
+                    }, onPlaybackStateChanged = {
+                        intent.onPlaybackStateChanged(it)
+                    })
+                }
             }
         }
 
@@ -119,12 +165,15 @@ class MainStoreFactory @Inject constructor(
                 Action.StationGroupsLoadingError -> {
                     dispatch(Msg.StationGroupsLoadingError)
                 }
+
                 Action.StationGroupsStartLoading -> {
                     dispatch(Msg.StationGroupsStartLoading)
                 }
+
                 Action.StationsLoadingError -> {
                     dispatch(Msg.StationsLoadingError)
                 }
+
                 Action.StationsStartLoading -> {
                     dispatch(Msg.StationsStartLoading)
                 }
@@ -139,20 +188,29 @@ class MainStoreFactory @Inject constructor(
                 is Msg.StationGroupsLoaded -> {
                     copy(stationGroupState = MainStore.State.StationGroupState.Loaded(msg.stationGroups))
                 }
+
                 Msg.StationGroupsLoadingError -> {
                     copy(stationGroupState = MainStore.State.StationGroupState.Error)
                 }
+
                 Msg.StationGroupsStartLoading -> {
                     copy(stationGroupState = MainStore.State.StationGroupState.Loading)
                 }
+
                 is Msg.StationsLoaded -> {
                     copy(stationState = MainStore.State.StationState.Loaded(msg.stations))
                 }
+
                 Msg.StationsLoadingError -> {
                     copy(stationState = MainStore.State.StationState.Error)
                 }
+
                 Msg.StationsStartLoading -> {
                     copy(stationState = MainStore.State.StationState.Loading)
+                }
+
+                is Msg.ChangeMovedStationGroupId -> {
+                    copy(movedStationGroupId = msg.id)
                 }
             }
         }

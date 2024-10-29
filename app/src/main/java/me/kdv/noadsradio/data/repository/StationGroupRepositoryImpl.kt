@@ -28,8 +28,9 @@ class StationGroupRepositoryImpl @Inject constructor(
                 val dbList = stationList.map {
                     stationGroupMapper.mapDtoToDb(it)
                 }
-                stationGroupDao.insertGroups(dbList)
 
+                stationGroupDao.insertGroups(dbList)
+                stationGroupDao.setStationIsCurrentBy(1)
                 stationRepository.deleteStations()
 
                 stationList.forEach { stationGroupDto ->

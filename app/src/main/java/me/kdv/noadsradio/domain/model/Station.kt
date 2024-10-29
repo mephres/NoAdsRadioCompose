@@ -11,7 +11,8 @@ data class Station(
     val image: String,
     val smallTitle: String,
     var state: StationPlaybackState = StationPlaybackState.STOPPED,
-    var position: Int = 0
+    var position: Int = 0,
+    var songTitle: String? = null
 )
 
 enum class StationPlaybackState{

@@ -28,4 +28,7 @@ interface StationDao {
 
     @Query("SELECT * FROM station WHERE url = :url")
     fun getStationById(url: String): LiveData<StationDb>
+
+    @Query("UPDATE station SET state = CASE WHEN id = :id THEN :state WHEN id <> :id THEN 2 END")
+    suspend fun setStationStateBy(id: Int, state: Int)
 }

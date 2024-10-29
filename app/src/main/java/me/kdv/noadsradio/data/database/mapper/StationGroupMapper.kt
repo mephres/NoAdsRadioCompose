@@ -7,6 +7,7 @@ import javax.inject.Inject
 
 class StationGroupMapper @Inject constructor() {
     fun mapDtoToDb(dto: StationGroupDto): StationGroupDb {
+
         return StationGroupDb(
             id = dto.id,
             name = dto.name ?: noData,

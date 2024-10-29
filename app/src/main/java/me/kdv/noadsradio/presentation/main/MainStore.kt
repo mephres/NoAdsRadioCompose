@@ -3,11 +3,13 @@ package me.kdv.noadsradio.presentation.main
 import com.arkivanov.mvikotlin.core.store.Store
 import me.kdv.noadsradio.domain.model.Station
 import me.kdv.noadsradio.domain.model.StationGroup
+import me.kdv.noadsradio.domain.model.StationPlaybackState
 
 interface MainStore : Store<MainStore.Intent, MainStore.State, MainStore.Label> {
 
     data class State(
-        val field: String,
+        val currentStation: Station? = null,
+        val movedStationGroupId: Int = -1,
         val stationGroupState: StationGroupState,
         val stationState: StationState
     ) {
@@ -32,7 +34,17 @@ interface MainStore : Store<MainStore.Intent, MainStore.State, MainStore.Label> 
     }
 
     sealed interface Intent {
-        data class SetIsCurrentStationGroup(val id: Int): Intent
+        data class SetIsCurrentStationGroup(val id: Int) : Intent
+        data class ChangeMovedStationGroupId(val id: Int) : Intent
+        data class ChangeStationState(val station: Station, val state: StationPlaybackState) :
+            Intent
+
+        data object StopPlaying : Intent
+        data class PlayStation(
+            val station: Station,
+            val onMediaMetadataChanged: (String) -> Unit,
+            val onPlaybackStateChanged: (Int) -> Unit
+        ) : Intent
         /*data class ChangeEmailOnHome(val email: String) : Intent
         data object ClickBack : Intent
         data object ClickPdfView : Intent

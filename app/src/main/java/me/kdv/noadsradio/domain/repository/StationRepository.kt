@@ -12,4 +12,5 @@ interface StationRepository {
     fun getStations(): Flow<List<Station>>
     suspend fun resetAllStations()
     fun getStationByUrl(url: String): LiveData<Station>
+    suspend fun setStationState(id: Int, state: Int)
 }

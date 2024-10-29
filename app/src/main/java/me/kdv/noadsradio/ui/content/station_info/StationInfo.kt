@@ -1,9 +1,12 @@
-package me.kdv.noadsradio.presentation.station_info
+package me.kdv.noadsradio.ui.content.station_info
 
 import android.annotation.SuppressLint
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,8 +18,14 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -36,7 +45,6 @@ import me.kdv.noadsradio.domain.model.StationPlaybackState
 @Composable
 fun StationInfo(
     station: Station,
-    songTitle: String,
     onStopButtonClicked: (Station) -> (Unit)
 ) {
     Card(
@@ -75,9 +83,10 @@ fun StationInfo(
                     start.linkTo(parent.start, margin = 0.dp)
                     top.linkTo(stationTitleText.bottom, margin = 4.dp)
                     bottom.linkTo(musicPlayingAnimation.top, margin = 4.dp)
-                    width = Dimension.fillToConstraints
+                    end.linkTo(stationControlButton.start)
+                    width = Dimension.matchParent
                 },
-                text = songTitle,
+                text = station.songTitle ?: "",
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Normal,
                 maxLines = 1,
@@ -110,10 +119,12 @@ fun StationInfo(
                 .height(15.dp)
             )
             {
-                repeat(3) {
+                val count = if (isPortraitOrientation()) {3} else {10}
+                val weight = (String.format("%.2f", (1 / count.toFloat()))).toFloat()
+                repeat(count){
                     Box(
                         modifier = Modifier
-                            .weight(0.333F)
+                            .weight(weight)
                     ) {
                         StationPlayingAnimation()
                     }
@@ -150,12 +161,35 @@ fun StationInfoPreview() {
         noJingle = false,
         image = "https://topradio.me/assets/image/radio/180/radio-atmosfera.png",
         state = StationPlaybackState.STOPPED,
-        smallTitle = ""
+        smallTitle = "",
+        songTitle = "Кузьмин - Я уеду в Комарово"
     )
 
     StationInfo(
         station = station,
-        songTitle = "Кузьмин - Я уеду в Комарово",
         onStopButtonClicked = {})
+}
+
+@Composable
+fun isPortraitOrientation() : Boolean {
+    var orientation by remember { mutableStateOf(Configuration.ORIENTATION_PORTRAIT) }
+
+    val configuration = LocalConfiguration.current
+
+// If our configuration changes then this will launch a new coroutine scope for it
+    LaunchedEffect(configuration) {
+        // Save any changes to the orientation value on the configuration object
+        snapshotFlow { configuration.orientation }
+            .collect { orientation = it }
+    }
+
+    return when (orientation) {
+        Configuration.ORIENTATION_LANDSCAPE -> {
+            false //LandscapeContent()
+        }
+        else -> {
+            true //PortraitContent()
+        }
+    }
 }
 

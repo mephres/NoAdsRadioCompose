@@ -1,5 +1,6 @@
-package me.kdv.noadsradio.presentation.station_groups
+package me.kdv.noadsradio.ui.content.station_group
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyListState
@@ -12,8 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.launch
 import me.kdv.noadsradio.domain.model.StationGroup
-import me.kdv.noadsradio.ui.content.station_group.StationGroupItem
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun StationGroups(
     stationGroupList: List<StationGroup>,
@@ -22,15 +23,21 @@ fun StationGroups(
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
-    LazyRow(state = listState,
+    LazyRow(
+        state = listState,
         modifier = Modifier.fillMaxWidth()
     ) {
-        items(items = stationGroupList) {stationGroup ->
+        items(items = stationGroupList) { stationGroup ->
             StationGroupItem(stationGroup = stationGroup) {
                 onStationGroupClickListener(it)
                 coroutineScope.launch {
                     val index = stationGroupList.indexOf(it)
                     listState.animateScrollAndCentralizeItem(index = index)
+                }
+            }
+            if (stationGroup.isCurrent) {
+                coroutineScope.launch {
+                    listState.animateScrollAndCentralizeItem(index = stationGroupList.indexOf(stationGroup))
                 }
             }
         }

@@ -11,11 +11,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import me.kdv.noadsradio.core.componentScope
+import me.kdv.noadsradio.domain.model.Station
+import me.kdv.noadsradio.domain.model.StationPlaybackState
 
 class DefaultMainComponent @AssistedInject constructor(
     private val mainStoreFactory: MainStoreFactory,
     @Assisted("componentContext") componentContext: ComponentContext,
-    ): MainComponent, ComponentContext by componentContext {
+) : MainComponent, ComponentContext by componentContext {
 
     private val store = instanceKeeper.getStore {
         mainStoreFactory.create()
@@ -38,6 +40,31 @@ class DefaultMainComponent @AssistedInject constructor(
 
     override fun setIsCurrentStationGroup(id: Int) {
         store.accept(MainStore.Intent.SetIsCurrentStationGroup(id))
+    }
+
+    override fun changeMovedStationGroupId(id: Int) {
+        store.accept(MainStore.Intent.ChangeMovedStationGroupId(id))
+    }
+
+    override fun changeStationState(station: Station, state: StationPlaybackState) {
+        store.accept(MainStore.Intent.ChangeStationState(station = station, state = state))
+    }
+
+    override fun stopPlaying() {
+        store.accept(MainStore.Intent.StopPlaying)
+    }
+
+    override fun playStation(
+        station: Station,
+        onMediaMetadataChanged: (String) -> Unit,
+        onPlaybackStateChanged: (Int) -> Unit
+    ) {
+        store.accept(
+            MainStore.Intent.PlayStation(
+                station = station,
+                onPlaybackStateChanged = { onPlaybackStateChanged(it) },
+                onMediaMetadataChanged = {onMediaMetadataChanged(it)})
+        )
     }
 
     @AssistedFactory
