@@ -4,9 +4,7 @@ import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -26,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -34,10 +33,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
+import com.airbnb.lottie.LottieProperty
+import com.airbnb.lottie.SimpleColorFilter
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.LottieDynamicProperty
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.airbnb.lottie.compose.rememberLottieDynamicProperties
+import com.airbnb.lottie.model.KeyPath
 import me.kdv.noadsradio.R
 import me.kdv.noadsradio.domain.model.Station
 import me.kdv.noadsradio.domain.model.StationPlaybackState
@@ -119,9 +126,13 @@ fun StationInfo(
                 .height(15.dp)
             )
             {
-                val count = if (isPortraitOrientation()) {3} else {10}
+                val count = if (isPortraitOrientation()) {
+                    3
+                } else {
+                    10
+                }
                 val weight = (String.format("%.2f", (1 / count.toFloat()))).toFloat()
-                repeat(count){
+                repeat(count) {
                     Box(
                         modifier = Modifier
                             .weight(weight)
@@ -144,7 +155,17 @@ fun StationPlayingAnimation() {
     LottieAnimation(
         composition = composition,
         iterations = LottieConstants.IterateForever,
-        isPlaying = true
+        isPlaying = true,
+        dynamicProperties = rememberLottieDynamicProperties(
+            LottieDynamicProperty(
+                property = LottieProperty.COLOR_FILTER,
+                value = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                    MaterialTheme.colorScheme.primary.hashCode(),
+                    BlendModeCompat.SRC_ATOP
+                ),
+                keyPath = KeyPath( "**")
+            )
+        )
     )
 }
 
@@ -171,7 +192,7 @@ fun StationInfoPreview() {
 }
 
 @Composable
-fun isPortraitOrientation() : Boolean {
+fun isPortraitOrientation(): Boolean {
     var orientation by remember { mutableStateOf(Configuration.ORIENTATION_PORTRAIT) }
 
     val configuration = LocalConfiguration.current
@@ -187,6 +208,7 @@ fun isPortraitOrientation() : Boolean {
         Configuration.ORIENTATION_LANDSCAPE -> {
             false //LandscapeContent()
         }
+
         else -> {
             true //PortraitContent()
         }

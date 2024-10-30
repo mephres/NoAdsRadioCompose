@@ -31,7 +31,6 @@ class MusicPlayer @Inject constructor(private val context: Context) {
             player = mediaControllerFuture.get()
 
             player?.currentMediaItem?.mediaId?.let {
-                //viewModel.setCurrentMediaId(it)
                 onCurrentMediaId(it)
             }
         }, MoreExecutors.directExecutor())
