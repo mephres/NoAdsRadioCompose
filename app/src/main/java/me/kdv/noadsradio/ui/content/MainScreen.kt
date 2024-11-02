@@ -30,7 +30,7 @@ import me.kdv.noadsradio.ui.content.station_info.StationInfo
 fun MainScreen(component: MainComponent) {
     val model by component.model.collectAsState()
 
-    var currentStation: Station? by rememberSaveable {
+    var currentStation: Station? by remember {
         mutableStateOf(null)
     }
 

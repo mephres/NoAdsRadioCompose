@@ -42,8 +42,6 @@ fun Stations(
             available: Offset,
             source: NestedScrollSource
         ): Offset {
-
-            //Log.d("Stations->onStationScrollListener", "$consumed")
             val index = if (consumed.y > 0) {
                 listState.getFirstItemVisibleIndex
             } else {

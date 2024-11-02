@@ -24,7 +24,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -33,11 +32,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import com.airbnb.lottie.LottieProperty
-import com.airbnb.lottie.SimpleColorFilter
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -48,6 +45,7 @@ import com.airbnb.lottie.model.KeyPath
 import me.kdv.noadsradio.R
 import me.kdv.noadsradio.domain.model.Station
 import me.kdv.noadsradio.domain.model.StationPlaybackState
+import kotlin.math.roundToInt
 
 @Composable
 fun StationInfo(
@@ -131,7 +129,8 @@ fun StationInfo(
                 } else {
                     10
                 }
-                val weight = (String.format("%.2f", (1 / count.toFloat()))).toFloat()
+
+                val weight = (((1 / count.toFloat()) * 100).roundToInt()) / 100f
                 repeat(count) {
                     Box(
                         modifier = Modifier
@@ -163,7 +162,7 @@ fun StationPlayingAnimation() {
                     MaterialTheme.colorScheme.primary.hashCode(),
                     BlendModeCompat.SRC_ATOP
                 ),
-                keyPath = KeyPath( "**")
+                keyPath = KeyPath("**")
             )
         )
     )
