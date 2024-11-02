@@ -9,5 +9,5 @@ data class StationGroupDb(
     val id: Int,
     val name: String,
     val description: String,
-    val isCurrent: Boolean
+    val isCurrent: Boolean = false
 )
