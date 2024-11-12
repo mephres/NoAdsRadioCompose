@@ -73,9 +73,9 @@ class MainStoreFactory @Inject constructor(
             musicPlayer.initMusicPlayer {
                 val a = 1
             }
+            dispatch(Action.StationGroupsStartLoading)
+            dispatch(Action.StationsStartLoading)
             scope.launch {
-                dispatch(Action.StationGroupsStartLoading)
-                dispatch(Action.StationsStartLoading)
                 loadStationsUseCase()
             }
             scope.launch {
