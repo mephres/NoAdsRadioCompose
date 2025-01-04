@@ -17,7 +17,8 @@ class StationMapper @Inject constructor() {
             url = dto.url ?: "",
             noJingle = dto.noJingle,
             image = dto.image ?: "",
-            state = StationPlaybackState.STOPPED.ordinal
+            state = StationPlaybackState.STOPPED.ordinal,
+            enabled = dto.enabled
         )
     }
 

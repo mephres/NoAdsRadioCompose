@@ -11,5 +11,6 @@ data class StationDto(
     @get:PropertyName("no_jingle")
     @set:PropertyName("no_jingle")
     var noJingle: Boolean = false,
-    val image: String? = null
+    val image: String? = null,
+    val enabled: Boolean = true
 )

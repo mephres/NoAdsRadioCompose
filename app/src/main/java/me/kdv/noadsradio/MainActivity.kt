@@ -25,12 +25,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
+        val component = rootComponentFactory.create(defaultComponentContext())
         setContent {
-
-            enableEdgeToEdge()
-            setContent {
-                RootContent(component = rootComponentFactory.create(defaultComponentContext()))
-            }
+            RootContent(component = component)
         }
     }
 }

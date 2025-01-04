@@ -14,5 +14,6 @@ data class StationDb(
     val url: String,
     val noJingle: Boolean,
     val image: String,
-    var state: Int
+    var state: Int,
+    val enabled: Boolean = true
 )

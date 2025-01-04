@@ -11,7 +11,7 @@ interface StationDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertStations(stations: List<StationDb>)
 
-    @Query("SELECT * FROM station")
+    @Query("SELECT * FROM station WHERE enabled = 1")
     fun getStations(): Flow<List<StationDb>>
 
     @Query("DELETE FROM station")
