@@ -30,7 +30,7 @@ class MusicPlayer @Inject constructor(private val context: Context) {
         mediaControllerFuture.addListener({
             player = mediaControllerFuture.get()
 
-            player?.currentMediaItem?.mediaId?.let {
+            player.currentMediaItem?.mediaId?.let {
                 onCurrentMediaId(it)
             }
         }, MoreExecutors.directExecutor())
@@ -42,7 +42,7 @@ class MusicPlayer @Inject constructor(private val context: Context) {
         onPlaybackStateChanged: (Int) -> Unit
     ) {
 
-        player?.let { player ->
+        player.let { player ->
 
             val uri = Uri.parse(station.url)
 
@@ -72,7 +72,7 @@ class MusicPlayer @Inject constructor(private val context: Context) {
     }
 
     fun stopPlaying() {
-        player?.let { player ->
+        player.let { player ->
             player.playWhenReady = false
             player.stop()
         }
