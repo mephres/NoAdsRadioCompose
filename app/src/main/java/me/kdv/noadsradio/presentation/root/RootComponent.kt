@@ -3,6 +3,7 @@ package me.kdv.noadsradio.presentation.root
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.value.Value
 import me.kdv.noadsradio.presentation.main.MainComponent
+import me.kdv.noadsradio.presentation.station_group.StationGroupComponent
 
 interface RootComponent {
 
@@ -10,5 +11,6 @@ interface RootComponent {
 
     sealed interface Child {
         data class Main(val component: MainComponent) : Child
+        data class StationGroup(val component: StationGroupComponent) : Child
     }
 }

@@ -12,11 +12,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import me.kdv.noadsradio.core.componentScope
 import me.kdv.noadsradio.domain.model.Station
+import me.kdv.noadsradio.domain.model.StationGroup
 import me.kdv.noadsradio.domain.model.StationPlaybackState
 
 class DefaultMainComponent @AssistedInject constructor(
     private val mainStoreFactory: MainStoreFactory,
     @Assisted("componentContext") componentContext: ComponentContext,
+    @Assisted("onOpenStationGroup") private val onOpenStationGroup: (StationGroup) -> Unit,
 ) : MainComponent, ComponentContext by componentContext {
 
     private val store = instanceKeeper.getStore {
@@ -27,8 +29,9 @@ class DefaultMainComponent @AssistedInject constructor(
         componentScope().launch {
             store.labels.collect {
                 when (it) {
-
-                    else -> {}
+                    is MainStore.Label.OnOpenStationGroup -> {
+                        onOpenStationGroup.invoke(it.stationGroup)
+                    }
                 }
             }
         }
@@ -37,6 +40,10 @@ class DefaultMainComponent @AssistedInject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     override val model: StateFlow<MainStore.State>
         get() = store.stateFlow
+
+    override fun onOpenStationGroup(stationGroup: StationGroup) {
+        store.accept(MainStore.Intent.OnOpenStationGroup(stationGroup = stationGroup))
+    }
 
     override fun setIsCurrentStationGroup(id: Int) {
         store.accept(MainStore.Intent.SetIsCurrentStationGroup(id))
@@ -63,7 +70,8 @@ class DefaultMainComponent @AssistedInject constructor(
             MainStore.Intent.PlayStation(
                 station = station,
                 onPlaybackStateChanged = { onPlaybackStateChanged(it) },
-                onMediaMetadataChanged = {onMediaMetadataChanged(it)})
+                onMediaMetadataChanged = { onMediaMetadataChanged(it) }
+            )
         )
     }
 
@@ -71,7 +79,8 @@ class DefaultMainComponent @AssistedInject constructor(
     interface Factory {
 
         fun create(
-            @Assisted("componentContext") componentContext: ComponentContext
+            @Assisted("componentContext") componentContext: ComponentContext,
+            @Assisted("onOpenStationGroup") onOpenStationGroup: (StationGroup) -> Unit,
         ): DefaultMainComponent
     }
 }

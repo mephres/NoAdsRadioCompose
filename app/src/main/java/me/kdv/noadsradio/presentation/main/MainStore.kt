@@ -29,11 +29,11 @@ interface MainStore : Store<MainStore.Intent, MainStore.State, MainStore.Label> 
     }
 
     sealed interface Label {
-        /*data object ClickHome : Label
-        data object ClickPdfView : Label*/
+        data class OnOpenStationGroup(val stationGroup: StationGroup): Label
     }
 
     sealed interface Intent {
+        data class OnOpenStationGroup(val stationGroup: StationGroup) : Intent
         data class SetIsCurrentStationGroup(val id: Int) : Intent
         data class ChangeMovedStationGroupId(val id: Int) : Intent
         data class ChangeStationState(val station: Station, val state: StationPlaybackState) :
@@ -45,10 +45,6 @@ interface MainStore : Store<MainStore.Intent, MainStore.State, MainStore.Label> 
             val onMediaMetadataChanged: (String) -> Unit,
             val onPlaybackStateChanged: (Int) -> Unit
         ) : Intent
-        /*data class ChangeEmailOnHome(val email: String) : Intent
-        data object ClickBack : Intent
-        data object ClickPdfView : Intent
-        data class ChangeNavigationRoute(val route: String) : Intent*/
     }
 }
 

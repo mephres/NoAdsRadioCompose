@@ -2,15 +2,21 @@ package me.kdv.noadsradio.ui.content.station_group
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.gestures.animateScrollBy
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import me.kdv.noadsradio.domain.model.StationGroup
 
@@ -18,18 +24,19 @@ import me.kdv.noadsradio.domain.model.StationGroup
 @Composable
 fun StationGroups(
     stationGroupList: List<StationGroup>,
-    onStationGroupClickListener: (StationGroup) -> Unit
+    onStationGroupSelect: (StationGroup) -> Unit
 ) {
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
-    LazyRow(
-        state = listState,
-        modifier = Modifier.fillMaxWidth()
+    LazyVerticalGrid(columns = GridCells.Fixed(3),
+        modifier = Modifier.fillMaxSize(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp), // Отступы по горизонтали
+        verticalArrangement = Arrangement.spacedBy(8.dp)    // Отступы по вертикали
     ) {
         items(items = stationGroupList) { stationGroup ->
             StationGroupItem(stationGroup = stationGroup) {
-                onStationGroupClickListener(it)
+                onStationGroupSelect(it)
                 coroutineScope.launch {
                     val index = stationGroupList.indexOf(it)
                     listState.animateScrollAndCentralizeItem(index = index)
@@ -66,5 +73,5 @@ fun StationGroupsPreview() {
         StationGroup(id = 4, name = "Retro", description = "Ретро"),
         StationGroup(id = 5, name = "Dance", description = "Танцевальная"),
     )
-    StationGroups(list, onStationGroupClickListener = {})
+    StationGroups(list, onStationGroupSelect = {})
 }

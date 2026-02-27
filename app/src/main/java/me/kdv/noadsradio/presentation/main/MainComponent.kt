@@ -2,11 +2,13 @@ package me.kdv.noadsradio.presentation.main
 
 import kotlinx.coroutines.flow.StateFlow
 import me.kdv.noadsradio.domain.model.Station
+import me.kdv.noadsradio.domain.model.StationGroup
 import me.kdv.noadsradio.domain.model.StationPlaybackState
 
 interface MainComponent {
     val model: StateFlow<MainStore.State>
 
+    fun onOpenStationGroup(stationGroup: StationGroup)
     fun setIsCurrentStationGroup(id: Int)
     fun changeMovedStationGroupId(id: Int)
     fun changeStationState(station: Station, state: StationPlaybackState)

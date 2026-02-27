@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -39,21 +40,25 @@ fun MainScreen(component: MainComponent) {
     }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding)) {
-            Spacer(modifier = Modifier.height(0.dp))
+        Column(modifier = Modifier
+            .padding(innerPadding)
+            .padding(horizontal = 16.dp)) {
+            Text(text = "Жанры")
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             Box {
                 StationGroupContent(
                     stationGroupState = model.stationGroupState,
-                ) {
-                    component.setIsCurrentStationGroup(it.id)
-                    component.changeMovedStationGroupId(it.id)
-                }
+                    onStationGroupSelect = {
+                        component.onOpenStationGroup(it)
+                    }
+                )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Box(modifier = Modifier.weight(1f)) {
+            /*Box(modifier = Modifier.weight(1f)) {
                 StationContent(
                     stationState = model.stationState,
                     movedStationGroupId = model.movedStationGroupId,
@@ -145,7 +150,7 @@ fun MainScreen(component: MainComponent) {
                         Log.d("MainScreen->onStationScrollListener", "$station")
                         component.changeMovedStationGroupId(-1)
                     })
-            }
+            }*/
 
             if (stationInfoIsVisible)
                 currentStation?.let {

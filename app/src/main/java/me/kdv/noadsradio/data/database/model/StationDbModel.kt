@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "station")
-data class StationDb(
+data class StationDbModel(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
     val stationId: Int,

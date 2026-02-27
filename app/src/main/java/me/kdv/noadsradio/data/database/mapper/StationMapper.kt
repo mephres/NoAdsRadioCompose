@@ -1,14 +1,14 @@
 package me.kdv.noadsradio.data.database.mapper
 
-import me.kdv.noadsradio.data.database.model.StationDb
+import me.kdv.noadsradio.data.database.model.StationDbModel
 import me.kdv.noadsradio.data.network.model.StationDto
 import me.kdv.noadsradio.domain.model.Station
 import me.kdv.noadsradio.domain.model.StationPlaybackState
 import javax.inject.Inject
 
 class StationMapper @Inject constructor() {
-    fun mapDtoToDb(dto: StationDto): StationDb {
-        return StationDb(
+    fun mapDtoToDb(dto: StationDto): StationDbModel {
+        return StationDbModel(
             id = dto.groupId * 1000 + dto.id,
             stationId = dto.id,
             groupId = dto.groupId,
@@ -22,7 +22,7 @@ class StationMapper @Inject constructor() {
         )
     }
 
-    fun mapDbToEntity(db: StationDb): Station {
+    fun mapDbToEntity(db: StationDbModel): Station {
         return Station(
             id = db.id,
             stationId = db.stationId,
@@ -37,8 +37,8 @@ class StationMapper @Inject constructor() {
         )
     }
 
-    fun mapEntityToDb(entity: Station): StationDb {
-        return StationDb(
+    fun mapEntityToDb(entity: Station): StationDbModel {
+        return StationDbModel(
             id = entity.id,
             stationId = entity.stationId,
             groupId = entity.groupId,

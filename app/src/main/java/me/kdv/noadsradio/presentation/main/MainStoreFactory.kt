@@ -148,6 +148,10 @@ class MainStoreFactory @Inject constructor(
                         intent.onPlaybackStateChanged(it)
                     })
                 }
+
+                is Intent.OnOpenStationGroup -> {
+                    publish(MainStore.Label.OnOpenStationGroup(stationGroup = intent.stationGroup))
+                }
             }
         }
 

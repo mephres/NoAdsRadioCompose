@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
 import me.kdv.noadsradio.presentation.root.DefaultRootComponent
 import me.kdv.noadsradio.presentation.root.RootComponent
+import me.kdv.noadsradio.ui.content.station.StationGroupContent
 import me.kdv.noadsradio.ui.theme.NoAdsRadioTheme
 
 @Composable
@@ -29,6 +30,10 @@ fun RootContent(
                     when(instance) {
                         is RootComponent.Child.Main -> {
                             MainScreen(component = instance.component)
+                        }
+
+                        is RootComponent.Child.StationGroup -> {
+                            StationGroupContent(component = instance.component)
                         }
                     }
                 }

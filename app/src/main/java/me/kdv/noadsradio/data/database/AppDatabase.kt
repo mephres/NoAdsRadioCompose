@@ -6,11 +6,11 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import me.kdv.noadsradio.data.database.dao.StationDao
 import me.kdv.noadsradio.data.database.dao.StationGroupDao
-import me.kdv.noadsradio.data.database.model.StationDb
+import me.kdv.noadsradio.data.database.model.StationDbModel
 import me.kdv.noadsradio.data.database.model.StationGroupDb
 
 @Database(
-    entities = [StationGroupDb::class, StationDb::class],
+    entities = [StationGroupDb::class, StationDbModel::class],
     version = 2, exportSchema = false
 )
 

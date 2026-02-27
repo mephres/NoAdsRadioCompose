@@ -53,4 +53,12 @@ class StationRepositoryImpl @Inject constructor(
     override suspend fun setStationState(id: Int, state: Int) {
         stationDao.setStationStateBy(id = id, state = state)
     }
+
+    override suspend fun getStationsByGroupId(groupId: Int): Flow<List<Station>> {
+        return stationDao.getStationsByGroupId(groupId = groupId).map {
+            it.map {
+                stationMapper.mapDbToEntity(it)
+            }
+        }
+    }
 }
