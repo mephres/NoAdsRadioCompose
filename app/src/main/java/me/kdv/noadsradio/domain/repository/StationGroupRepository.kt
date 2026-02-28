@@ -10,5 +10,5 @@ interface StationGroupRepository {
     fun getStationGroups(): Flow<List<StationGroup>>
     suspend fun updateStationGroups(stationGroups: List<StationGroup>)
     suspend fun resetStationGroup()
-    suspend fun setStationIsCurrentBy(id: Int)
+    suspend fun setStationIsCurrentBy(id: Int?)
 }

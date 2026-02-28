@@ -2,7 +2,9 @@ package me.kdv.noadsradio.ui.content.station
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -48,10 +50,11 @@ import me.kdv.noadsradio.R
 import me.kdv.noadsradio.domain.model.Station
 import me.kdv.noadsradio.domain.model.StationPlaybackState
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun StationItem(
     station: Station,
-    onStationClickListener: (Station) -> Unit
+    onStationClick: (Station) -> Unit
 ) {
     var hasLoadingError by remember {
         mutableStateOf(false)
@@ -132,7 +135,10 @@ fun StationItem(
                     end.linkTo(stationJingleImage.start, margin = 0.dp, goneMargin = 8.dp)
                     top.linkTo(stationImage.top, margin = 0.dp)
                     width = Dimension.fillToConstraints
-                }, fontSize = 20.sp, fontWeight = FontWeight.Bold
+                }.basicMarquee(),
+                softWrap = false,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold
             )
             Text(
                 text = station.groupName,
@@ -151,7 +157,7 @@ fun StationItem(
                     .padding(0.dp)
                     .size(50.dp),
                 onClick = {
-                    onStationClickListener(station)
+                    onStationClick(station)
                 }) {
                 val resourceId = when (station.state) {
                     StationPlaybackState.PLAYING -> {
@@ -243,5 +249,5 @@ fun StationItemPreview() {
         smallTitle = ""
     )
 
-    StationItem(station = station, onStationClickListener = {})
+    StationItem(station = station, onStationClick = {})
 }

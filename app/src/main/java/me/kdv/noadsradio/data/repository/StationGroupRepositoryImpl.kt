@@ -30,7 +30,7 @@ class StationGroupRepositoryImpl @Inject constructor(
                 }
 
                 stationGroupDao.insertGroups(dbList)
-                stationGroupDao.setStationIsCurrentBy(1)
+                stationGroupDao.resetCurrentStation()
                 stationRepository.deleteStations()
 
                 stationList.forEach { stationGroupDto ->
@@ -68,7 +68,12 @@ class StationGroupRepositoryImpl @Inject constructor(
         stationGroupDao.resetGroups()
     }
 
-    override suspend fun setStationIsCurrentBy(id: Int) {
-        stationGroupDao.setStationIsCurrentBy(id = id)
+    override suspend fun setStationIsCurrentBy(id: Int?) {
+        id?.let {
+            stationGroupDao.setStationIsCurrentBy(id = id)
+        } ?: run {
+            stationGroupDao.resetCurrentStation()
+        }
+
     }
 }

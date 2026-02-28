@@ -15,5 +15,7 @@ data class StationDbModel(
     val noJingle: Boolean,
     val image: String,
     var state: Int,
-    val enabled: Boolean = true
+    val enabled: Boolean = true,
+    val isCurrent: Boolean = false,
+    val isFavourite: Boolean = false
 )

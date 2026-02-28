@@ -21,4 +21,7 @@ interface StationGroupDao {
 
     @Query("UPDATE station_group SET isCurrent = CASE WHEN id = :id THEN 1 WHEN id <> :id THEN 0 END")
     suspend fun setStationIsCurrentBy(id: Int)
+
+    @Query("UPDATE station_group SET isCurrent = 0")
+    suspend fun resetCurrentStation()
 }

@@ -11,7 +11,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import me.kdv.noadsradio.core.componentScope
+import me.kdv.noadsradio.domain.model.Station
 import me.kdv.noadsradio.domain.model.StationGroup
+import me.kdv.noadsradio.domain.model.StationPlaybackState
+import me.kdv.noadsradio.presentation.main.MainStore
 
 class DefaultStationGroupComponent @AssistedInject constructor(
     private val stationGroupStoreFactory: StationGroupStoreFactory,
@@ -42,6 +45,33 @@ class DefaultStationGroupComponent @AssistedInject constructor(
 
     override fun onBackClick() {
         store.accept(StationGroupStore.Intent.OnBackClick)
+    }
+
+    override fun onChangeStationState(station: Station, state: StationPlaybackState) {
+        store.accept(
+            StationGroupStore.Intent.OnChangeStationState(
+                station = station,
+                state = state
+            )
+        )
+    }
+
+    override fun onStopPlaying() {
+        store.accept(StationGroupStore.Intent.OnStopPlaying)
+    }
+
+    override fun onPlayStation(
+        station: Station,
+        onMediaMetadataChanged: (String) -> Unit,
+        onPlaybackStateChanged: (Int) -> Unit
+    ) {
+        store.accept(
+            StationGroupStore.Intent.OnPlayStation(
+                station = station,
+                onPlaybackStateChanged = { onPlaybackStateChanged(it) },
+                onMediaMetadataChanged = { onMediaMetadataChanged(it) }
+            )
+        )
     }
 
 

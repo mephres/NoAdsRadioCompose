@@ -52,6 +52,7 @@ fun MainScreen(component: MainComponent) {
                     stationGroupState = model.stationGroupState,
                     onStationGroupSelect = {
                         component.onOpenStationGroup(it)
+                        component.setIsCurrentStationGroup(it.id)
                     }
                 )
             }

@@ -8,5 +8,5 @@ import javax.inject.Inject
 class SetIsCurrentStationGroupUseCase @Inject constructor(
     private val stationGroupRepository: StationGroupRepository
 ) {
-    suspend operator fun invoke(id: Int) = stationGroupRepository.setStationIsCurrentBy(id = id)
+    suspend operator fun invoke(id: Int?) = stationGroupRepository.setStationIsCurrentBy(id = id)
 }

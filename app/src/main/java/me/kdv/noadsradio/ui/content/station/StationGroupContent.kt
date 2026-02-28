@@ -1,5 +1,6 @@
 package me.kdv.noadsradio.ui.content.station
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,11 +26,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import me.kdv.noadsradio.domain.model.Station
+import me.kdv.noadsradio.domain.model.StationPlaybackState
 import me.kdv.noadsradio.presentation.station_group.StationGroupComponent
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,6 +42,14 @@ import me.kdv.noadsradio.presentation.station_group.StationGroupComponent
 fun StationGroupContent(component: StationGroupComponent) {
 
     val state by component.model.collectAsState()
+
+    var currentStation: Station? by remember {
+        mutableStateOf(null)
+    }
+
+    var stationInfoIsVisible by rememberSaveable {
+        mutableStateOf(false)
+    }
 
     val title by remember {
         mutableStateOf(state.currentStationGroup?.description ?: "")
@@ -79,9 +92,99 @@ fun StationGroupContent(component: StationGroupComponent) {
                         height = Dimension.fillToConstraints
                     }) {
                         items(state.stations) { station ->
-                            StationItem(station = station) {
+                            StationItem(
+                                station = station,
+                                onStationClick = { station ->
+                                    currentStation = station
+                                    when (station.state) {
+                                        StationPlaybackState.PLAYING -> {
+                                            currentStation?.let {
+                                                component.onChangeStationState(
+                                                    it,
+                                                    StationPlaybackState.STOPPED
+                                                )
+                                                currentStation = null
+                                                component.onStopPlaying()
+                                                stationInfoIsVisible = false
+                                            }
+                                        }
+                                        StationPlaybackState.LOADED -> {}
+                                        StationPlaybackState.STOPPED -> {
+                                            currentStation = station
 
-                            }
+                                            component.onChangeStationState(
+                                                station = station,
+                                                state = StationPlaybackState.LOADED
+                                            )
+
+                                            component.onPlayStation(
+                                                station = station,
+                                                onMediaMetadataChanged = { songTitle ->
+                                                    currentStation?.let { cs ->
+                                                        currentStation = cs.copy(songTitle = songTitle)
+                                                    }
+
+                                                    stationInfoIsVisible = true
+                                                },
+                                                onPlaybackStateChanged = { state ->
+                                                    when (state) {
+                                                        1 -> {
+                                                            Log.d(
+                                                                "NoAdsPlayerPlaybackState",
+                                                                "STATE_IDLE"
+                                                            )
+                                                            component.onStopPlaying()
+
+                                                            stationInfoIsVisible = false
+
+                                                            currentStation?.let {
+                                                                component.onChangeStationState(
+                                                                    it,
+                                                                    StationPlaybackState.STOPPED
+                                                                )
+                                                                currentStation = null
+                                                            }
+                                                        }
+
+                                                        2 -> {
+                                                            Log.d(
+                                                                "NoAdsPlayerPlaybackState",
+                                                                "STATE_BUFFERING"
+                                                            )
+                                                            currentStation?.let { currentStation ->
+                                                                component.onChangeStationState(
+                                                                    currentStation,
+                                                                    StationPlaybackState.LOADED
+                                                                )
+                                                            }
+                                                        }
+
+                                                        3 -> {
+                                                            Log.d(
+                                                                "NoAdsPlayerPlaybackState",
+                                                                "STATE_READY"
+                                                            )
+                                                            currentStation?.let { currentStation ->
+                                                                component.onChangeStationState(
+                                                                    currentStation,
+                                                                    StationPlaybackState.PLAYING
+                                                                )
+                                                            }
+                                                        }
+
+                                                        4 -> {
+                                                            Log.d(
+                                                                "NoAdsPlayerPlaybackState",
+                                                                "STATE_ENDED"
+                                                            )
+                                                        }
+                                                    }
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                            )
                         }
                     }
                 }

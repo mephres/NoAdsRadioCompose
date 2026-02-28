@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import me.kdv.noadsradio.domain.model.Station
 import me.kdv.noadsradio.domain.model.StationGroup
 import me.kdv.noadsradio.domain.usecases.GetStationsByGroupIdUseCase
+import me.kdv.noadsradio.domain.usecases.SetStationStateUseCase
 import me.kdv.noadsradio.presentation.MusicPlayer
 import javax.inject.Inject
 
@@ -16,7 +17,8 @@ class StationGroupStoreFactory @Inject constructor(
     private val storeFactory: StoreFactory,
     private val musicPlayer: MusicPlayer,
     private val getStationsByGroupIdUseCase: GetStationsByGroupIdUseCase,
-    ) {
+    private val setStationStateUseCase: SetStationStateUseCase,
+) {
 
     fun create(stationGroup: StationGroup): StationGroupStore =
         object : StationGroupStore,
@@ -30,7 +32,7 @@ class StationGroupStoreFactory @Inject constructor(
                 executorFactory = ::ExecutorImpl,
                 reducer = ReducerImpl
             ) {
-            }
+        }
 
     private sealed interface Action {
         data class StationsLoaded(val stations: List<Station>) : Action
@@ -40,7 +42,8 @@ class StationGroupStoreFactory @Inject constructor(
         data class StationsLoaded(val stations: List<Station>) : Msg
     }
 
-    private inner class BootstrapperImpl(val stationGroupId: Int) : CoroutineBootstrapper<Action>() {
+    private inner class BootstrapperImpl(val stationGroupId: Int) :
+        CoroutineBootstrapper<Action>() {
         override fun invoke() {
             musicPlayer.initMusicPlayer {
                 val a = 1
@@ -62,6 +65,24 @@ class StationGroupStoreFactory @Inject constructor(
             when (intent) {
                 StationGroupStore.Intent.OnBackClick -> {
                     publish(StationGroupStore.Label.OnBackClick)
+                }
+
+                is StationGroupStore.Intent.OnPlayStation -> {
+                    musicPlayer.playStation(
+                        station = intent.station,
+                        onMediaMetadataChanged = {
+                            intent.onMediaMetadataChanged(it)
+                        }, onPlaybackStateChanged = {
+                            intent.onPlaybackStateChanged(it)
+                        }
+                    )
+                }
+
+                StationGroupStore.Intent.OnStopPlaying -> musicPlayer.stopPlaying()
+                is StationGroupStore.Intent.OnChangeStationState -> {
+                    scope.launch {
+                        setStationStateUseCase(id = intent.station.id, state = intent.state.ordinal)
+                    }
                 }
             }
         }

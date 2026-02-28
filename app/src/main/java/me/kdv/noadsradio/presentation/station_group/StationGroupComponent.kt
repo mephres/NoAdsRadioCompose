@@ -8,4 +8,11 @@ interface StationGroupComponent {
     val model: StateFlow<StationGroupStore.State>
 
     fun onBackClick()
+    fun onChangeStationState(station: Station, state: StationPlaybackState)
+    fun onStopPlaying()
+    fun onPlayStation(
+        station: Station,
+        onMediaMetadataChanged: (String) -> Unit,
+        onPlaybackStateChanged: (Int) -> Unit
+    )
 }
